@@ -34,7 +34,7 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment successful on $(deployPath) !..'
+            echo 'Deployment successful on ${deployPath} !..'
         }
         failure {
             echo 'Deployment failed on ${deployPath} !...'
