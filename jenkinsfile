@@ -27,8 +27,8 @@ pipeline {
                     env
                     whoami
                     cp -r * ${deployPath}/
-                    env.DEPLOY_STATUS = 'SUCCESS'
                     """
+                    env.DEPLOY_STATUS = 'SUCCESS'
                 }
             }
         }
