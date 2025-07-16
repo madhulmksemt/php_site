@@ -18,6 +18,8 @@ pipeline {
                     echo "Deploying to ${env.DEPLOY_DIR}"
                     // Ensure the Apache directory exists and is writable
                     sh """
+                    env
+                    whoami
                     cp -r * ${DEPLOY_DIR}/
                     """
                 }
