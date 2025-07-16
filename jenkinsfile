@@ -8,6 +8,7 @@ pipeline {
     environment {
         STAGING_DIR = '/var/www/html'
         PROD_DIR = '/var/www/html'
+        DEPLOY_STATUS = 'NOT_STARTED'
     }
 
     stages {
