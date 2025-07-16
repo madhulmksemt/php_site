@@ -18,10 +18,7 @@ pipeline {
                     echo "Deploying to ${env.DEPLOY_DIR}"
                     // Ensure the Apache directory exists and is writable
                     sh """
-                    sudo rm -rf ${DEPLOY_DIR}/*
                     sudo cp -r * ${DEPLOY_DIR}/
-                    sudo chown -R www-data:www-data ${DEPLOY_DIR}
-                    sudo chmod -R 755 ${DEPLOY_DIR}
                     """
                 }
             }
