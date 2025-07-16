@@ -1,8 +1,13 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['staging', 'prod'], description: 'Select the deployment environment')
+    }
+
     environment {
-        DEPLOY_DIR = '/var/www/html'
+        STAGING_DIR = '/var/www/html'
+        PROD_DIR = '/var/www/html'
     }
 
     stages {
@@ -15,12 +20,12 @@ pipeline {
         stage('Deploy to Apache') {
             steps {
                 script {
-                    echo "Deploying to ${env.DEPLOY_DIR}"
-                    // Ensure the Apache directory exists and is writable
+                    def deployPath = (params.ENVIRONMENT == 'prod') ? env.PROD_DIR : env.STAGING_DIR
+                    echo "Deploying to ${deployPath}"
                     sh """
                     env
                     whoami
-                    cp -r * ${DEPLOY_DIR}/
+                    cp -r * ${deployPath}/
                     """
                 }
             }
@@ -29,10 +34,10 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment successful!'
+            echo 'Deployment successful on $(deployPath) !..'
         }
         failure {
-            echo 'Deployment failed.'
+            echo 'Deployment failed on ${deployPath} !...'
         }
     }
 }
