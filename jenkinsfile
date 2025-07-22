@@ -44,6 +44,28 @@ pipeline {
             }
         }
 
+        stage('Deploy to Environment') {
+            steps {
+                script {
+                    if (params.ENVIRONMENT == 'staging') {
+                        sh """
+                        scp -o StrictHostKeyChecking=no ${DEPLOY_ZIP} root@${REMOTE_STAGE_SERVER}:${STAGING_DIR}
+                        ssh -o StrictHostKeyChecking=no root@${REMOTE_STAGE_SERVER} "unzip -o ${STAGING_DIR}/${DEPLOY_ZIP} -d ${STAGING_DIR} && rm -f ${STAGING_DIR}/${DEPLOY_ZIP}"
+                        """
+                        env.DEPLOY_STATUS = 'SUCCESS'
+                    } else if (params.ENVIRONMENT == 'prod') {
+                        sh """
+                        scp -o StrictHostKeyChecking=no ${DEPLOY_ZIP} root@${REMOTE_STAGE_SERVER}:${PROD_DIR}
+                        ssh -o StrictHostKeyChecking=no root@${REMOTE_STAGE_SERVER} "unzip -o ${PROD_DIR}/${DEPLOY_ZIP} -d ${PROD_DIR} && rm -f ${PROD_DIR}/${DEPLOY_ZIP}"
+                        """
+                        env.DEPLOY_STATUS = 'SUCCESS'
+                    } else {
+                        error "Invalid environment selected: ${params.ENVIRONMENT}"
+                    }
+                }
+            }
+        }
+
         stage( 'Clean Workspace') {
             steps {
                 cleanWs()
