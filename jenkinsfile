@@ -29,7 +29,7 @@ pipeline {
         stage('Archive PHP Code') {
             steps {
                 sh '''
-                zip -r $DEPLOY_ZIP . -x "*.git*" "*.zip*" "*node_modules*" "*vendor*" "*tests*" "*README.md*" ./*
+                zip -r "$DEPLOY_ZIP" . -x "*.git*" "*.zip*" "*/.git/*" "workspace/*"
                 '''
             }
         }
