@@ -6,6 +6,8 @@ pipeline {
     }
 
     environment {
+        REMOTE_STAGE_SERVER = '192.168.5.222'
+        DEPLOY_ZIP = 'php-app-${BUILD_NUMBER}.zip'
         STAGING_DIR = '/var/www/html'
         PROD_DIR = '/var/www/html'
         DEPLOY_STATUS = 'NOT_STARTED'
@@ -17,6 +19,19 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/madhulmksemt/php_site.git'
             }
         }
+
+        stage(
+            'Build/Zip the Application'
+        ) {
+            steps {
+                script {
+                    echo "Zip the application..."
+                    sh "zip -r ${env.DEPLOY_ZIP} . -x '*.git*'"
+                    archiveArtifacts artifacts: "${DEPLOY_ZIP}", onlyIfSuccessful: true
+                }
+            }
+        }
+        )
 
         stage('Deploy to Apache') {
             steps {
