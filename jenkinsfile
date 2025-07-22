@@ -23,6 +23,7 @@ pipeline {
         stage('Package PHP Files') {
             steps {
                 sh """
+                    #!/bin/bash
                     echo "Packaging PHP files"
                     zip -r ../${DEPLOY_ZIP} ./*
                 """
