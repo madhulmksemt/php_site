@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         REMOTE_STAGE_SERVER = '192.168.5.222'
-        DEPLOY_ZIP = 'php-app-${BUILD_NUMBER}.zip'
+        DEPLOY_ZIP = "php-app-${BUILD_NUMBER}.zip"
         STAGING_DIR = '/var/www/html'
         PROD_DIR = '/var/www/html'
         DEPLOY_STATUS = 'NOT_STARTED'
@@ -22,7 +22,10 @@ pipeline {
 
         stage('Verify Files') {
             steps {
-                sh 'ls -la'
+                sh ''' 
+                    env
+                    ls -la
+                    '''
             }
         }
 
@@ -38,6 +41,12 @@ pipeline {
             steps {
                 archiveArtifacts artifacts: "${DEPLOY_ZIP}", fingerprint: true
                 echo "Packaged artifact: ${DEPLOY_ZIP}"
+            }
+        }
+
+        stage( 'Clean Workspace') {
+            steps {
+                cleanWs()
             }
         }
     }
