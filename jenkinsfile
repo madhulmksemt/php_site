@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         REMOTE_STAGE_SERVER = '192.168.5.222'
-        DEPLOY_ZIP = 'php-app-${env.BUILD_NUMBER}.zip'
+        DEPLOY_ZIP = 'php-app-${BUILD_NUMBER}.zip'
         STAGING_DIR = '/var/www/html'
         PROD_DIR = '/var/www/html'
         DEPLOY_STATUS = 'NOT_STARTED'
