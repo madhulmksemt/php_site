@@ -20,6 +20,12 @@ pipeline {
             }
         }
 
+        stage('Verify Files') {
+            steps {
+                sh 'ls -la'
+            }
+        }
+
         stage('Archive PHP Code') {
             steps {
                 sh '''
