@@ -20,58 +20,20 @@ pipeline {
             }
         }
 
-        stage('Package PHP Files') {
+        stage('Archive PHP Code') {
             steps {
-                sh """
-                    #!/bin/bash
-                    echo "Packaging PHP files"
-                    zip -r ../${DEPLOY_ZIP} ./*
-                """
-                archiveArtifacts artifacts: "${DEPLOY_ZIP}", onlyIfSuccessful: true
+                sh '''
+                zip -r $ZIP_NAME . -x "*.git*" "*node_modules*" "*vendor*" "*tests*" "*README.md*"
+                '''
             }
         }
 
-        stage('Upload to Remote Server') {
+        stage('Archive Artifact') {
             steps {
-                script {
-                    echo "Uploading ${env.DEPLOY_ZIP} to remote server..."
-                    sh """
-                    scp -o StrictHostKeyChecking=no ${env.DEPLOY_ZIP} user@${env.REMOTE_STAGE_SERVER}:/tmp/
-                    """
-                }
+                archiveArtifacts artifacts: "${ZIP_NAME}", fingerprint: true
+                echo "Packaged artifact: ${ZIP_NAME}"
             }
         }
-        stage('Unzip on Remote Server') {
-            steps {
-                script {
-                    echo "Unzipping ${env.DEPLOY_ZIP} on remote server..."
-                    sh """
-                    ssh -o StrictHostKeyChecking=no user@${env.REMOTE_STAGE_SERVER} 'unzip -o /tmp/${env.DEPLOY_ZIP} -d /var/www/html/'
-                    """
-                }
-            }
-        }
-        stage('Clean Up Remote Server') {
-            steps {
-                script {
-                    echo "Cleaning up remote server..."
-                    sh """
-                    ssh -o StrictHostKeyChecking=no user@${env.REMOTE_STAGE_SERVER} 'rm /tmp/${env.DEPLOY_ZIP}'
-                    """
-                }
-            }
-        }
-        stage('Run Tests') {
-            steps {
-                script {
-                    echo "Running tests..."
-                    // Here you can add commands to run your tests
-                    // For example, if you have PHPUnit tests:
-                    // sh 'vendor/bin/phpunit'
-                }
-            }
-        }
-
     }
 
     post {
