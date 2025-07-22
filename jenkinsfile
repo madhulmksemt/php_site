@@ -20,17 +20,14 @@ pipeline {
             }
         }
 
-        stage(
-            'Build/Zip the Application'
-        ) {
+        stage('Package PHP Files') {
             steps {
-                script {
-                    echo "Zip the application..."
-                    sh "zip -r ${env.DEPLOY_ZIP} . -x '*.git*'"
-                    echo "Application zipped as ${env.DEPLOY_ZIP}"
-                }
+                sh """
+                    echo "Packaging PHP files from ${PHP_SOURCE_DIR}"
+                    zip -r ../${DEPLOY_ZIP} ./*
+                """
+                archiveArtifacts artifacts: "${DEPLOY_ZIP}", onlyIfSuccessful: true
             }
-            archiveArtifacts artifacts: "${DEPLOY_ZIP}", onlyIfSuccessful: true
         }
 
         stage('Upload to Remote Server') {
