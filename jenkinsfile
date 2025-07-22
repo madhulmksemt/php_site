@@ -31,22 +31,48 @@ pipeline {
                 }
             }
         }
-        )
 
-        stage('Deploy to Apache') {
+        stage('Upload to Remote Server') {
             steps {
                 script {
-                    def deployPath = (params.ENVIRONMENT == 'prod') ? env.PROD_DIR : env.STAGING_DIR
-                    echo "Deploying to ${deployPath}"
+                    echo "Uploading ${env.DEPLOY_ZIP} to remote server..."
                     sh """
-                    env
-                    whoami
-                    cp -r * ${deployPath}/
+                    scp -o StrictHostKeyChecking=no ${env.DEPLOY_ZIP} user@${env.REMOTE_STAGE_SERVER}:/tmp/
                     """
-                    env.DEPLOY_STATUS = 'SUCCESS'
                 }
             }
         }
+        stage('Unzip on Remote Server') {
+            steps {
+                script {
+                    echo "Unzipping ${env.DEPLOY_ZIP} on remote server..."
+                    sh """
+                    ssh -o StrictHostKeyChecking=no user@${env.REMOTE_STAGE_SERVER} 'unzip -o /tmp/${env.DEPLOY_ZIP} -d /var/www/html/'
+                    """
+                }
+            }
+        }
+        stage('Clean Up Remote Server') {
+            steps {
+                script {
+                    echo "Cleaning up remote server..."
+                    sh """
+                    ssh -o StrictHostKeyChecking=no user@${env.REMOTE_STAGE_SERVER} 'rm /tmp/${env.DEPLOY_ZIP}'
+                    """
+                }
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                script {
+                    echo "Running tests..."
+                    // Here you can add commands to run your tests
+                    // For example, if you have PHPUnit tests:
+                    // sh 'vendor/bin/phpunit'
+                }
+            }
+        }
+
     }
 
     post {
