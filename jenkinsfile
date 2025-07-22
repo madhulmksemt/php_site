@@ -23,7 +23,7 @@ pipeline {
         stage('Package PHP Files') {
             steps {
                 sh """
-                    echo "Packaging PHP files from ${PHP_SOURCE_DIR}"
+                    echo "Packaging PHP files"
                     zip -r ../${DEPLOY_ZIP} ./*
                 """
                 archiveArtifacts artifacts: "${DEPLOY_ZIP}", onlyIfSuccessful: true
