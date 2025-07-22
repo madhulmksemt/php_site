@@ -27,9 +27,10 @@ pipeline {
                 script {
                     echo "Zip the application..."
                     sh "zip -r ${env.DEPLOY_ZIP} . -x '*.git*'"
-                    archiveArtifacts artifacts: "${DEPLOY_ZIP}", onlyIfSuccessful: true
+                    echo "Application zipped as ${env.DEPLOY_ZIP}"
                 }
             }
+            archiveArtifacts artifacts: "${DEPLOY_ZIP}", onlyIfSuccessful: true
         }
 
         stage('Upload to Remote Server') {
